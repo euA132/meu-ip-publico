@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu IP Público</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4a90e2;
+        }
+        p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Seu IP Público</h1>
+        <p id="ip">Carregando...</p>
+        <p id="info"></p>
+    </div>
+
+    <script>
+        async function fetchIp() {
+            const url = 'https://api.ipify.org?format=json';
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Erro na resposta da API');
+                }
+                const data = await response.json();
+                
+                const ip = data.ip;
+                document.getElementById('ip').textContent = `Este é o teu IP público: ${ip}`;
+                
+                // Obter informações adicionais com outra API
+                const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+                if (!locationResponse.ok) {
+                    throw new Error('Erro ao obter informações de localização');
+                }
+                const locationData = await locationResponse.json();
+                
+                document.getElementById('info').textContent = `Localização: ${locationData.city}, ${locationData.region}, ${locationData.country_name} | ISP: ${locationData.org}`;
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('ip').textContent = 'Não foi possível obter o IP.';
+                document.getElementById('info').textContent = 'Informações adicionais não disponíveis.';
+            }
+        }
+
+        fetchIp();
+    </script>
+</body>
+</html>
